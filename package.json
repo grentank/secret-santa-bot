@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node index.js",
     "db:remigrate:dev": "NODE_ENV=development npm run db:remigrate",
     "db:remigrate:prod": "NODE_ENV=production npm run db:remigrate",
     "db:reset:dev": "NODE_ENV=development npm run db:reset",
-    "db:reset:prod": "NODE_ENV=production  npm run db:reset",
+    "db:reset:prod": "NODE_ENV=production npm run db:reset",
     "db:reset": "sequelize db:drop && sequelize db:create && sequelize db:migrate && sequelize db:seed:all",
     "db:remigrate": "sequelize db:seed:undo:all; sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all"
   },

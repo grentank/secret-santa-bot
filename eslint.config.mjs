@@ -15,4 +15,10 @@ export default [
   },
   pluginJs.configs.recommended,
   ...elbrusConfig,
+  {
+    rules: {
+      'no-console': 'off',
+      'class-methods-use-this': 'warn',
+    },
+  },
 ];
