@@ -1,15 +1,29 @@
 const { Participant, Shuffling, Wish } = require('../../db/models');
+const createUsername = require('../utils/createUsername');
 
 class WishService {
   constructor() {
     this.MAX_WISHES = 5;
+    this.receiverCodes = {
+      noShufflings: 'noShufflings',
+      noUserFound: 'noUserFound',
+      userNotActivated: 'userNotActivated',
+      noWishesRecorded: 'noWishesRecorded',
+    };
+  }
+
+  async hasStartedBot(telegramUserId) {
+    const targetParticipant = await Participant.findOne({
+      where: {
+        telegramUserId,
+      },
+    });
+    targetParticipant.hasStartedBot = true;
+    return targetParticipant.save();
   }
 
   async createWish(ctx) {
-    const username =
-      ctx.from.username || ctx.from.last_name
-        ? `${ctx.from.first_name} ${ctx.from.last_name}`
-        : ctx.from.first_name;
+    const username = createUsername(ctx.from);
 
     const [participant, created] = await Participant.findOrCreate({
       where: {
@@ -39,7 +53,49 @@ class WishService {
       await currentWishes[0].destroy();
     }
 
+    // if (participant.id === 9) {
+    //   await Shuffling.create({
+    //     fromParticipantId: 1,
+    //     toParticipantId: 9,
+    //     accepted: false,
+    //   });
+    // }
+
     return [username, wishesLength];
+  }
+
+  async getReceiverWishes(telegramUserId) {
+    const fromParticipant = await Participant.findOne({
+      where: {
+        telegramUserId,
+      },
+      include: {
+        model: Shuffling,
+        as: 'shufflingFrom',
+      },
+    });
+    if (fromParticipant.shufflingFrom.length === 0) {
+      return { data: null, reason: this.receiverCodes.noShufflings };
+    }
+    const targetShuffling = fromParticipant.shufflingFrom[0];
+    const receiver = await Participant.findOne({
+      where: {
+        id: targetShuffling.toParticipantId,
+      },
+      include: {
+        model: Wish,
+        as: 'wishes',
+      },
+    });
+    if (!receiver) {
+      return { data: null, reason: this.receiverCodes.noUserFound };
+    }
+    if (receiver.wishes.length === 0) {
+      return { data: null, reason: this.receiverCodes.noWishesRecorded };
+    }
+    targetShuffling.accepted = true;
+    await targetShuffling.save();
+    return { data: receiver.wishes };
   }
 
   async getParticipantWishes(telegramUserId) {
@@ -53,7 +109,22 @@ class WishService {
         order: [['id', 'ASC']],
       },
     });
-    return participant.wishes;
+    return participant?.wishes;
+  }
+
+  getParticipants() {
+    return Participant.findAll({
+      include: [
+        {
+          model: Wish,
+          as: 'wishes',
+        },
+        {
+          model: Shuffling,
+          as: 'shufflingFrom',
+        },
+      ],
+    });
   }
 }
 

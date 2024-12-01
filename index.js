@@ -17,7 +17,9 @@ bot.on('message', (ctx) => {
   }
 });
 
-bot.launch().catch((err) => console.log('Ошибка запуска бота', err));
+bot
+  .launch(() => console.log('Бот запущен'))
+  .catch((err) => console.log('Ошибка запуска бота', err));
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

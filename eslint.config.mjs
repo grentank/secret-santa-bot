@@ -19,6 +19,7 @@ export default [
     rules: {
       'no-console': 'off',
       'class-methods-use-this': 'warn',
+      'consistent-return': 'warn',
     },
   },
 ];
