@@ -20,6 +20,7 @@ export default [
       'no-console': 'off',
       'class-methods-use-this': 'warn',
       'consistent-return': 'warn',
+      'no-continue': 'off',
     },
   },
 ];

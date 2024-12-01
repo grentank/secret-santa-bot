@@ -1,11 +1,12 @@
+const createRandomPermutation = require('./src/utils/createRandomPermutation');
 const createUsername = require('./src/utils/createUsername');
 
-console.log(createUsername({ username: 'grentank' }));
-console.log(createUsername({ username: 'grentank', first_name: 'Tatiana' }));
-console.log(
-  createUsername({ username: 'grentank', first_name: 'Tatiana', last_name: 'batyukova' }),
-);
-console.log(createUsername({ first_name: 'Tatiana', last_name: 'batyukova' }));
+// console.log(createUsername({ username: 'grentank' }));
+// console.log(createUsername({ username: 'grentank', first_name: 'Tatiana' }));
+// console.log(
+//   createUsername({ username: 'grentank', first_name: 'Tatiana', last_name: 'batyukova' }),
+// );
+// console.log(createUsername({ first_name: 'Tatiana', last_name: 'batyukova' }));
 // const grentank = {
 //   id: 3069620,gi
 //   is_bot: false,
@@ -20,3 +21,9 @@ console.log(createUsername({ first_name: 'Tatiana', last_name: 'batyukova' }));
 //     ? `${grentank.first_name} ${grentank.last_name}`
 //     : grentank.first_name,
 // );
+
+console.log(
+  createRandomPermutation(14)
+    .map((e, i) => `${i}\t${e}`)
+    .join('\n'),
+);
