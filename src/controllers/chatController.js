@@ -1,3 +1,4 @@
+const chatService = require('../services/chatService');
 const wishService = require('../services/wishService');
 const generateSecondVideoResponse = require('../utils/generateSecondVideoResponse');
 const generateVideoResponse = require('../utils/generateVideoResponse');
@@ -20,9 +21,10 @@ class ChatController {
 
   onMessage = async (ctx) => {
     // Сообщение в чате, а не лично боту
-    const elbrusChatGroupId = Number(process.env.ELBRUS_SECRET_SANTA_GROUP_ID);
+    // const elbrusChatGroupId = Number(process.env.ELBRUS_SECRET_SANTA_GROUP_ID);
     // Проверка, что это требуемый чат Эльбруса, а не произвольный
-    if (elbrusChatGroupId !== ctx.chat.id) {
+    const targetChat = await chatService.isValidChat(ctx.chat.id);
+    if (!targetChat) {
       return ctx.reply(this.wrongChatMessage);
     }
     if (!ctx.message || !ctx.message.video_note) {

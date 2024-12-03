@@ -1,52 +1,80 @@
 'use strict';
 
-const { Wish, Participant, Shuffling } = require('../models');
+const { Wish, Participant, Shuffling, Chat } = require('../models');
 require('dotenv').config();
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     const { NODE_ENV } = process.env;
     if (NODE_ENV === 'development' || !NODE_ENV) {
+      await Chat.bulkCreate([
+        {
+          telegramChatId: Number(process.env.ELBRUS_SECRET_SANTA_GROUP_ID_MSK),
+          telegramChatName: 'MSK Elbrus',
+          doneShuffling: false,
+        },
+        {
+          telegramChatId: Number(process.env.ELBRUS_SECRET_SANTA_GROUP_ID_SPB),
+          telegramChatName: 'SPB Elbrus',
+          doneShuffling: false,
+        },
+      ]);
       await Participant.bulkCreate([
         {
+          // id: 1,
           telegramUserId: 3069620,
           telegramUsername: 'grentank',
           hasStartedBot: true,
+          chatId: 1,
         },
         {
+          // id: 2,
           telegramUserId: 2233, // 523600769,
           telegramUsername: 'tanya_batyukova-not-real',
           hasStartedBot: false,
+          chatId: 1,
         },
         {
+          // id: 3,
           telegramUserId: 1,
           telegramUsername: 'alex',
           hasStartedBot: false,
+          chatId: 1,
         },
         {
+          // id: 4,
           telegramUserId: 2,
           telegramUsername: 'bob',
           hasStartedBot: false,
+          chatId: 1,
         },
         {
+          // id: 5,
           telegramUserId: 3,
           telegramUsername: 'carl',
           hasStartedBot: true,
+          chatId: 1,
         },
         {
+          // id: 6,
           telegramUserId: 4,
           telegramUsername: 'dimon',
           hasStartedBot: true,
+          chatId: 1,
         },
         {
+          // id: 7,
           telegramUserId: 5,
           telegramUsername: 'enot',
           hasStartedBot: false,
+          chatId: 1,
         },
         {
+          // id: 8,
           telegramUserId: 6,
           telegramUsername: 'fedor',
           hasStartedBot: true,
+          chatId: 1,
         },
       ]);
 

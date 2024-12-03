@@ -3,35 +3,25 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Participants', {
+    await queryInterface.createTable('Chats', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      telegramUserId: {
+      telegramChatId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         unique: true,
-      },
-      telegramUsername: {
-        type: Sequelize.STRING,
         allowNull: false,
       },
-      hasStartedBot: {
+      telegramChatName: {
+        type: Sequelize.STRING,
+      },
+      doneShuffling: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false,
-      },
-      chatId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Chats',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
       },
       createdAt: {
         allowNull: false,
@@ -44,6 +34,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Participants');
+    await queryInterface.dropTable('Chats');
   },
 };

@@ -1,4 +1,4 @@
-const { Participant, Shuffling, Wish } = require('../../db/models');
+const { Participant, Shuffling, Wish, Chat } = require('../../db/models');
 const createUsername = require('../utils/createUsername');
 
 class WishService {
@@ -12,10 +12,15 @@ class WishService {
     };
   }
 
-  async hasStartedBot(telegramUserId) {
-    const targetParticipant = await Participant.findOne({
+  async hasStartedBot(ctx) {
+    const username = createUsername(ctx.from);
+    const [targetParticipant] = await Participant.findOrCreate({
       where: {
-        telegramUserId,
+        telegramUserId: ctx.from.id,
+      },
+      defaults: {
+        telegramUsername: username,
+        hasStartedBot: true,
       },
     });
     targetParticipant.hasStartedBot = true;
@@ -24,10 +29,16 @@ class WishService {
 
   async createWish(ctx) {
     const username = createUsername(ctx.from);
+    const targetChat = await Chat.findOne({
+      where: {
+        telegramChatId: ctx.chat.id,
+      },
+    });
 
     const [participant, created] = await Participant.findOrCreate({
       where: {
         telegramUserId: ctx.from.id,
+        chatId: targetChat.id,
       },
       defaults: {
         telegramUsername: username,
@@ -118,6 +129,7 @@ class WishService {
         {
           model: Wish,
           as: 'wishes',
+          required: true,
         },
         {
           model: Shuffling,

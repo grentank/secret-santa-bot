@@ -1,5 +1,5 @@
 const { Participant, Shuffling, Wish } = require('../../db/models');
-const createUsername = require('../utils/createUsername');
+const createRandomPermutation = require('../utils/createRandomPermutation');
 
 class ShufflingService {
   constructor() {
@@ -11,12 +11,31 @@ class ShufflingService {
       include: {
         model: Wish,
         as: 'wishes',
+        required: true,
       },
     });
-    const filteredParticipants = participants.filter((p) =>
-      this.hasToHaveWishes ? p.wishes.length > 0 : true,
+    const permutation = createRandomPermutation(participants.length);
+    return Shuffling.bulkCreate(
+      participants.map((participant, index) => ({
+        fromParticipantId: participant.id,
+        toParticipantId: participants[permutation[index]].id,
+        accepted: false,
+      })),
     );
-    
+  }
+
+  getParticipantsShufflings() {
+    return Participant.findAll({
+      include: {
+        model: Shuffling,
+        as: 'shufflingFrom',
+        required: true,
+        include: {
+          model: Participant,
+          as: 'toParticipant',
+        },
+      },
+    });
   }
 }
 
